@@ -1,0 +1,91 @@
+
+PARSER_BEGIN(Lexer)
+
+public class Lexer {
+    public static void main(String[] args) {
+        Lexer lex = null;
+
+        System.out.println("Reading from file " + args[0]);
+        try {
+            lex = new Lexer(new java.io.FileInputStream(args[0]));
+        }
+        catch(java.io.FileNotFoundException e) {
+            System.out.println("Error in reading file");
+        }
+        
+        
+        try {
+            lex.Start();
+            System.out.println("Lexical analyzing was done successfully");
+        }
+        catch(ParseException e) {
+            System.out.println("Error in parsing");
+            System.out.println(e.getMessage());
+        }
+        catch(TokenMgrError e) {
+            System.out.println("There was an error in analyzing the code");
+            System.out.println(e.getMessage());
+        }
+    }
+
+}
+
+PARSER_END(Lexer)
+
+SKIP: {
+    " "
+|   "\t"
+|   "\n"
+|   "\r"
+|   <"#" (~["\n", "\r"])* ("\n" | "\r" | "\r\n")>
+}
+
+// Reserved words and operators
+TOKEN: {
+	<HAPPY: (<COLON>)(<HYPHEN>)?(<RB>)+> 
+|	<SAD: (<COLON>)(<HYPHEN>)?(<LB>)+>
+|	<WINK: (<SEMIC>)(<HYPHEN>)?(<RB>)+>
+|	<SMILE: (<COLON>)("D")>
+|   <TONGUE: (<COLON>)(("P")|("p"))>
+|   <EMBARRASSED: (<COLON>)(<HYPHEN>)?(<PIPE>)>
+|   <SURPRISED: (<COLON>)("o")>
+|   <FLOWER: ("@}")(<HYPHEN>)(<HYPHEN>)(<HYPHEN>)*(((<C>)|(<COMMA>)|(<CO>)|(<LT>)|(<RB>))((<HYPHEN>)(<HYPHEN>)(<HYPHEN>)*))*>
+|   <KISS: ((("XO")+)|(("xo")+))>
+|   <SNAKE: (<ASSIGN>)(<ASSIGN>)(<ASSIGN>)*(":}")>
+|   <HAPPYNUM: (<DIGIT>)(<HYPHEN>)(<RB>)>
+|   <SADNUM: (<DIGIT>)(<HYPHEN>)(<LB>)>
+|   <HEART: ("3")(<LT>)>
+|   <LOVE4HEVR: (<HEART>)((<TILDA>)(<TILDA>)(<TILDA>)(<HEART>))*>
+
+}   
+
+// Identifiers etc.
+TOKEN: {
+    <#LB: "(">
+|   <#RB: ")">
+|   <#DIGIT: ["0"-"9"]>
+|   <#COMMA: ",">
+|   <#ASSIGN: "=">
+|	<#COLON:  ":">
+|	<#HYPHEN: "-">
+|	<#SEMIC: ";">
+|	<#PIPE: "|">
+|	<#LT: ">">
+|	<#C: "'">
+|	<#CO: "`">
+|	<#TILDA: "~">
+
+
+
+
+}
+
+
+void Start() : {}
+{
+    ( 
+    <HAPPY> | <SAD> | <WINK> | <SMILE> | <TONGUE> | <EMBARRASSED> | <SURPRISED> | 
+    <FLOWER> | <KISS> | <SNAKE> | <HAPPYNUM> | <SADNUM> | <HEART> | <LOVE4HEVR>
+    )*
+    <EOF>
+}
